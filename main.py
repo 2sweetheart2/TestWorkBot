@@ -61,8 +61,8 @@ async def on_message_new(message):
     dataset = []
     labels = []
     current_date = datetime_from
-    while current_date <= datetime_to:
-        next_date = current_date + group_period
+    next_date = current_date + group_period
+    while current_date < datetime_to:
         query = {
             "dt": {"$gte": current_date, "$lt": next_date}
         }
@@ -74,8 +74,14 @@ async def on_message_new(message):
         dataset.append(total_value)
         labels.append(current_date.isoformat())
         current_date = next_date
-    result = {"dataset": dataset, "labels": labels}
-    await bot.send_message(chat_id=message.chat.id, text=str(result).replace('\'','\"'))
+        next_date = current_date + group_period
 
+    while current_date <= datetime_to:
+        dataset.append(0)
+        labels.append(current_date.isoformat())
+        current_date = current_date + group_period
+
+    t = {"dataset": dataset, "labels": labels}
+    await bot.send_message(chat_id=message.chat.id,text=str(t).replace('\'','\"'))
 
 bot.run('6301358766:AAEFkRyrHidca-_s1s_mu27QANkPMNJompU')
